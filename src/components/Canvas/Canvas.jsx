@@ -123,53 +123,53 @@ class Canvas extends Component {
     context.fillRect(cellWidth * cell.x +1, cellHeight * cell.y +1, cellWidth -2, cellHeight -2);
   }
 
-  _onMouseMove(e) {
-    this.setState({ mouse: {x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY}});
-
-    if(this.state.mouseDown) {
-      const {cellX, cellY} = this.getCellUnderMouse();
-      if(Maze.maze[cellY][cellX].state !== 1) {
-        this.makeWall({cellY, cellX});
-      }
-    }
-  }
-
   getCellUnderMouse() {
     const {x, y} = this.state.mouse;
     const {width, height} = this.canvasRef.current;
     const cellHeight = height / this.state.mazeSize;
     const cellWidth = width / this.state.mazeSize;
-    const cellX = Math.floor(y / cellHeight);
-    const cellY = Math.floor(x / cellWidth);
+    const cellX = Math.floor(x / cellWidth);
+    const cellY = Math.floor(y / cellHeight);
     return {cellX, cellY};
   }
 
-  makeWall({cellX, cellY}){
-    Maze.makeWall(cellY, cellX);
+  makeWall(){
+    const {cellX, cellY} = this.getCellUnderMouse();
+    if(this.state.mouseDown) {
+      if(Maze.maze[cellX][cellY].state === 0) {
+        Maze.makeWall(cellX, cellY);
+      }
+    } else {
+        Maze.makeWall(cellX, cellY);
+    }
+
     this.forceUpdate();
   }
 
-  handleClick(e) {
-    const {cellX, cellY} = this.getCellUnderMouse();
-    this.makeWall({cellX, cellY});
+  _onMouseMove(e) {
+    this.setState({ mouse: {x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY}});
+    if(this.state.mouseDown) {
+      this.makeWall();
+    }
   }
-
-  handleMouseDown(e) {
+  _onMouseDown(e) {
+    this.makeWall();
     this.setState({mouseDown: true});
   }
-  handleMouseUp(e) {
+  _onMouseUp(e) {
     this.setState({mouseDown: false});
   }
-
+  _onMouseLeave(e) {
+    this.setState({mouseDown: false});
+  }
 
   render() {
     return (
       <div className="container" ref={this.container}>
-        <canvas
-          onClick={(event) => this.handleClick(event)}
-                onMouseDown={(event => this.handleMouseDown(event))}
-                onMouseUp={(event => this.handleMouseUp(event))}
+        <canvas onMouseDown={(event => this._onMouseDown(event))}
+                onMouseUp={(event => this._onMouseUp(event))}
                 onMouseMove={(event => this._onMouseMove(event))}
+                onMouseLeave={(event => this._onMouseLeave(event))}
                 ref={this.canvasRef}
                 width={this.state.canvasWidth}
                 height={this.state.canvasWidth}

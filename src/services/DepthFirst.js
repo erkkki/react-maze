@@ -29,8 +29,7 @@ class DepthFirst {
 
       /** Backtrack if no neighbours */
       if(neighbours.length === 0) {
-        const cell = this.path.pop();
-        this.currentCell = cell;
+        this.currentCell =  this.path.pop();
       } else {
         this.currentCell = neighbours[0];
         this.visitedCells.push(this.currentCell);
@@ -42,7 +41,18 @@ class DepthFirst {
     }
     console.log(`Path length: ${this.path.length}`);
     console.log(`Visited cells length: ${this.visitedCells.length}`);
-    return this.path;
+
+    this.paintPath(this.path);
+  }
+
+
+  paintPath(path) {
+    path.forEach(cell => {
+      if(cell.state === 0) {
+        cell.color = '#5a7ac3';
+        this.maze.update.next();
+      }
+    });
   }
 
   getNeighbourCells(x,y) {
@@ -52,11 +62,15 @@ class DepthFirst {
     neighbours.push(this.maze.maze?.[x-1]?.[y]);
     neighbours.push(this.maze.maze?.[x+1]?.[y]);
 
+    /** Filter out out of bound cells */
     neighbours = neighbours.filter(cell => cell !== undefined);
+    /** Filter out of wall cells */
     neighbours = neighbours.filter(cell => cell.state !== 1);
+    /** Filter out all ready visited cells */
     neighbours = neighbours.filter(cell => {
       return !this.visitedCells.includes(cell);
     });
+    /** Sort by shortest distance to end */
     neighbours.sort((a,b) => {
       const aDist = this.distance(a.x,a.y, this.end.x, this.end.y);
       const bDist = this.distance(b.x,b.y, this.end.x, this.end.y);

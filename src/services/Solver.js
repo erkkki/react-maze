@@ -7,8 +7,8 @@ class Solver {
 
 
   solve() {
-    const path = new DepthFirst(Maze);
-    console.log(path);
+    const depth = new DepthFirst(Maze);
+    console.log(depth);
   }
 
 
