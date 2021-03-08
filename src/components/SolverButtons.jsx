@@ -3,15 +3,18 @@ import React from "react";
 import Maze from "../services/Maze";
 import Solver from "../services/Solver";
 
+import HeatMap from "../services/HeatMap";
+
 
 class SolverButtons extends React.Component {
-  // constructor(props) {
-  //   super(props);
-  // }
+
+  constructor(props) {
+    super(props);
+    this.maze = Maze;
+  }
 
   distanceHeatMap() {
-    Solver.distanceHeatMap();
-    Maze.update.next();
+    new HeatMap(Maze);
   }
 
   newMaze() {

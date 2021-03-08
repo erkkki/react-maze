@@ -142,7 +142,6 @@ class Canvas extends Component {
     } else {
         Maze.makeWall(cellX, cellY);
     }
-
     this.forceUpdate();
   }
 
