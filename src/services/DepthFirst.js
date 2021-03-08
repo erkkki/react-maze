@@ -29,14 +29,12 @@ class DepthFirst {
 
       /** Backtrack if no neighbours */
       if(neighbours.length === 0) {
-
         this.currentCell =  this.path.pop();
-
       } else {
+
         this.path.push(this.currentCell);
         this.currentCell = neighbours[0];
         this.visitedCells.push(this.currentCell);
-
 
         this.currentCell.color = '#72c354';
         this.maze.update.next();
@@ -61,6 +59,7 @@ class DepthFirst {
 
   getNeighbourCells(x,y) {
     let neighbours = [];
+    /** All possible neighbour cells. */
     neighbours.push(this.maze.maze?.[x]?.[y-1]);
     neighbours.push(this.maze.maze?.[x]?.[y+1]);
     neighbours.push(this.maze.maze?.[x-1]?.[y]);
@@ -83,14 +82,14 @@ class DepthFirst {
     return neighbours;
   }
 
-  /** Distance between 2 points by 0.00 digits */
+  /** Distance between 2 points */
   distance(x1, y1, x2, y2) {
     return Math.sqrt(
       (
         Math.pow(x2 - x1, 2) +
         Math.pow(y2 - y1, 2)
       )
-    ).toFixed(2);
+    );
   }
 
 }
