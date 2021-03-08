@@ -29,15 +29,19 @@ class DepthFirst {
 
       /** Backtrack if no neighbours */
       if(neighbours.length === 0) {
+
         this.currentCell =  this.path.pop();
+
       } else {
+        this.path.push(this.currentCell);
         this.currentCell = neighbours[0];
         this.visitedCells.push(this.currentCell);
-        this.path.push(this.currentCell);
+
+
+        this.currentCell.color = '#72c354';
+        this.maze.update.next();
+        await new Promise(r => setTimeout(r, 100));
       }
-      this.currentCell.color = '#72c354';
-      this.maze.update.next();
-      await new Promise(r => setTimeout(r, 100));
     }
     console.log(`Path length: ${this.path.length}`);
     console.log(`Visited cells length: ${this.visitedCells.length}`);
