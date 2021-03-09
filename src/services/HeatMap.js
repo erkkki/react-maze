@@ -3,6 +3,7 @@ class HeatMap {
   constructor(maze) {
     this.maze = maze;
     this.size = maze.size.getValue();
+    this.maxDist = Math.sqrt(Math.pow(this.size,2) + Math.pow( this.size, 2));
 
     this.genHeatMap();
 
@@ -21,7 +22,7 @@ class HeatMap {
 
   colorCell(cell) {
     const dist = this.distance(cell, this.maze.end);
-    const heat = Math.floor(255 / this.size * dist);
+    const heat = 255 - Math.floor(255 / this.maxDist * dist);
     let hexHeat = heat.toString(16);
 
     if (hexHeat.length < 2) {

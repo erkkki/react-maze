@@ -7,34 +7,37 @@ class Canvas extends Component {
 
   constructor(props) {
     super(props);
+    this.maze = Maze;
     this.container = createRef();
     this.canvasRef = createRef();
     this.state = {
       mouseDown: false,
+      mouseDownInitState: 0,
       mouse: {
         x: 0,
         y: 0,
       },
-      mazeSize: Maze.size.getValue(),
-      containerWidth: 100,
-      containerHeight: 100,
+      mazeSize: this.maze.size.getValue(),
       canvasWidth: 100,
       canvasHeight: 100,
     }
   }
 
   componentDidMount() {
+    this.maze.update.subscribe(() => {
+      this.forceUpdate();
+    });
 
-    Maze.size.subscribe(value => {
+    this.maze.size.subscribe(value => {
       this.setState({
         mazeSize: value
       });
     });
+    this.drawCanvas();
+  }
 
-    Maze.update.subscribe(val => {
-      this.forceUpdate();
-    });
-
+  drawCanvas() {
+    const windowHeight = window.innerHeight;
     this.drawBorder();
     this.drawLines();
     this.drawCells();
@@ -42,11 +45,13 @@ class Canvas extends Component {
     const containerWidth = this.container.current.offsetWidth;
     const containerHeight = this.container.current.offsetHeight;
 
-    let canvasWidth = containerWidth * 0.8;
-    let canvasHeight = containerWidth * 0.8;
+    let canvasWidth = containerWidth;
+    let canvasHeight = containerWidth;
 
-    /** TODO sometimes canvas is bigger than screen */
-
+    if(canvasWidth > (windowHeight - 100)) {
+      canvasWidth = windowHeight - 100;
+      canvasHeight = windowHeight - 100;
+    }
     this.setState({
       containerWidth: containerWidth,
       containerHeight: containerHeight,
@@ -63,7 +68,7 @@ class Canvas extends Component {
   }
 
   drawCells() {
-    const cells = Maze.maze;
+    const cells = this.maze.maze;
     cells.forEach((row) => {
       row.forEach((cell) => {
         this.drawCell(cell);
@@ -130,17 +135,18 @@ class Canvas extends Component {
     const cellWidth = width / this.state.mazeSize;
     const cellX = Math.floor(x / cellWidth);
     const cellY = Math.floor(y / cellHeight);
-    return {cellX, cellY};
+    return this.maze.maze[cellX][cellY];
   }
 
   makeWall(){
-    const {cellX, cellY} = this.getCellUnderMouse();
-    if(this.state.mouseDown) {
-      if(Maze.maze[cellX][cellY].state === 0) {
-        Maze.makeWall(cellX, cellY);
+    const cell = this.getCellUnderMouse();
+
+    if (this.state.mouseDown) {
+      if(cell.state === this.state.mouseDownInitState) {
+        this.maze.makeWall(cell.x, cell.y);
       }
     } else {
-        Maze.makeWall(cellX, cellY);
+      this.maze.makeWall(cell.x, cell.y);
     }
     this.forceUpdate();
   }
@@ -151,14 +157,19 @@ class Canvas extends Component {
       this.makeWall();
     }
   }
-  _onMouseDown(e) {
-    this.makeWall();
+  _onMouseDown() {
+    const cell = this.getCellUnderMouse();
+    this.setState({
+      ...this.state,
+      mouseDownInitState: cell.state,
+    });
     this.setState({mouseDown: true});
+    this.makeWall();
   }
-  _onMouseUp(e) {
+  _onMouseUp() {
     this.setState({mouseDown: false});
   }
-  _onMouseLeave(e) {
+  _onMouseLeave() {
     this.setState({mouseDown: false});
   }
 

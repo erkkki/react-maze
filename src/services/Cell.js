@@ -33,7 +33,7 @@ class Cell {
       }
       /** End cell */
       case 3: {
-        this._color = '#1cc308';
+        this._color = '#0a5404';
         break;
       }
       /** Empty */

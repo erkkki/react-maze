@@ -36,7 +36,9 @@ class DepthFirst {
         this.currentCell = neighbours[0];
         this.visitedCells.push(this.currentCell);
 
-        this.currentCell.color = '#72c354';
+        if(this.currentCell.state !== 2 && this.currentCell.state !== 3) {
+          this.currentCell.color = '#72c354';
+        }
         this.maze.update.next();
         await new Promise(r => setTimeout(r, 100));
       }
