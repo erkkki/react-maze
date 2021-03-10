@@ -1,7 +1,7 @@
 import {BehaviorSubject, Subject} from "rxjs";
 
 import MazeGenerator from "./MazeGenerator";
-import Cell from "./Cell";
+// import Cell from "./Cell";
 
 class Maze {
 

@@ -4,16 +4,17 @@ class MazeGenerator {
   maze = [];
   start = {};
   end = {};
-  visited = [];
 
   constructor(size) {
     this.size = size;
 
     this.genCells();
+
+    // this.genWalls();
+
+    this.primMaze();
+
     this.randomCoalCells();
-
-    this.genWalls();
-
     return this.maze;
   }
 
@@ -28,6 +29,64 @@ class MazeGenerator {
       }
       this.maze.push(row);
     }
+  }
+
+  primMaze() {
+    let counter = 0;
+    let visited = [];
+    let frontier = [];
+
+    let currentCell = this.randomCell();
+    visited.push(currentCell);
+
+
+    do {
+      // 4. Add all unvisited cells that are adjacent to the current cell to the frontier set.
+      let neighbours = this.getNeighbourCells(currentCell);
+      neighbours = neighbours.filter((cell) => !visited.includes(cell));
+
+      neighbours.forEach((cell) => {
+        if(!frontier.includes(cell)) {
+          frontier.push(cell);
+        }
+      });
+      // 5. Choose a cell randomly from the frontier set and make it the current cell,
+      // removing it from the frontier set and adding it to the visited set.
+      currentCell = frontier[Math.floor(Math.random() * frontier.length)];
+      visited.push(currentCell);
+      frontier = frontier.filter((cell) => JSON.stringify(cell) !== JSON.stringify(currentCell));
+
+
+      /** TODO FIX */
+      /** MAKE wall */
+      currentCell = frontier[Math.floor(Math.random() * frontier.length)];
+      visited.push(currentCell);
+      frontier = frontier.filter((cell) => JSON.stringify(cell) !== JSON.stringify(currentCell));
+
+      if(currentCell) {
+        neighbours = this.getNeighbourCells(currentCell);
+        neighbours = neighbours.filter((cell) => !visited.includes(cell));
+
+        neighbours.forEach(cell => {
+          frontier.push(cell);
+        })
+
+        if (neighbours.length > 1) {
+          neighbours.length = neighbours.length - 1;
+        }
+
+        neighbours.forEach(cell => {
+          visited.push(cell);
+          cell.state = 1;
+        });
+      }
+    } while (frontier.length > 0)
+  }
+
+  randomCell() {
+    let x = Math.floor(Math.random() * Math.floor(this.size));
+    let y = Math.floor(Math.random() * Math.floor(this.size));
+    return this.maze[x][y];
   }
 
   randomCoalCells() {
@@ -53,14 +112,6 @@ class MazeGenerator {
   }
 
   genWalls() {
-    // Randomized Prim's algorithm
-    //   Start with a grid full of walls.
-    //     Pick a cell, mark it as part of the maze. Add the walls of the cell to the wall list.
-    //     While there are walls in the list:
-    //     Pick a random wall from the list. If only one of the two cells that the wall divides is visited, then:
-    //   Make the wall a passage and mark the unvisited cell as part of the maze.
-    //     Add the neighboring walls of the cell to the wall list.
-    //     Remove the wall from the list.
     this.maze.forEach(row => {
       row.forEach(cell => {
         if(cell.state === 0) {
@@ -69,11 +120,13 @@ class MazeGenerator {
       });
     });
 
+    let visited = [];
+
     let currentCell = this.start;
 
     while(true) {
       let neighbours = this.getNeighbourCells(currentCell);
-      neighbours = neighbours.filter(cell => !this.visited.includes(cell));
+      neighbours = neighbours.filter(cell => !visited.includes(cell));
       neighbours = neighbours.filter(cell => cell.state === 1);
 
       if(neighbours.length === 0) {
@@ -82,11 +135,11 @@ class MazeGenerator {
 
       let random = neighbours[Math.floor(Math.random() * neighbours.length)];
       random.state = 0;
-      this.visited.push(random);
+      visited.push(random);
 
       currentCell = random;
 
-      neighbours.forEach(cell => this.visited.push(cell));
+      neighbours.forEach(cell => visited.push(cell));
     }
   }
 
