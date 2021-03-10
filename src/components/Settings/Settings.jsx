@@ -4,6 +4,7 @@ import Maze from "../../services/Maze";
 import Solver from "../../services/Solver";
 
 import HeatMap from "../../services/HeatMap";
+import Player from "./Player";
 
 
 class Settings extends React.Component {
@@ -46,6 +47,7 @@ class Settings extends React.Component {
   render() {
     return (
       <div className="container-fluid">
+        <Player />
         <div className="col-12">
           <button type="button"
                   onClick={this.distanceHeatMap}

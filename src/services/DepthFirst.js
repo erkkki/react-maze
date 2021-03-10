@@ -8,18 +8,20 @@ class DepthFirst {
     this.start = maze.start;
     this.end = maze.end;
     this.currentCell = this.start;
+
     this.visitedCells.push(this.start);
     this.path.push(this.start);
+
     this.solve();
   }
 
 
-  async solve() {
+  solve() {
     let counter = 0;
     while (JSON.stringify(this.currentCell) !== JSON.stringify(this.end)) {
-      if(JSON.stringify(this.currentCell) !== JSON.stringify(this.start)) {
-        this.currentCell.color = '#8ac672';
-      }
+      // if(JSON.stringify(this.currentCell) !== JSON.stringify(this.start)) {
+      //   this.currentCell.color = '#8ac672';
+      // }
       /** Failsafe */
       counter++;
       if(counter > 10000) break;
@@ -36,17 +38,13 @@ class DepthFirst {
         this.currentCell = neighbours[0];
         this.visitedCells.push(this.currentCell);
 
-        if(this.currentCell.state !== 2 && this.currentCell.state !== 3) {
-          this.currentCell.color = '#72c354';
-        }
+        // if(this.currentCell.state !== 2 && this.currentCell.state !== 3) {
+        //   this.currentCell.color = '#72c354';
+        // }
         this.maze.update.next();
-        await new Promise(r => setTimeout(r, 100));
       }
     }
-    console.log(`Path length: ${this.path.length}`);
-    console.log(`Visited cells length: ${this.visitedCells.length}`);
-
-    this.paintPath(this.path);
+    // this.paintPath(this.path);
   }
 
 

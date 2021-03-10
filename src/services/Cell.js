@@ -36,6 +36,16 @@ class Cell {
         this._color = '#0a5404';
         break;
       }
+      /** Visited cell */
+      case 4: {
+        this._color = '#8ac672';
+        break;
+      }
+      /** Visited path */
+      case 5: {
+        this._color = '#7298c6';
+        break;
+      }
       /** Empty */
       default: {
         this._color = '#ffffff';

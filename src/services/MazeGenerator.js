@@ -32,7 +32,6 @@ class MazeGenerator {
   }
 
   primMaze() {
-    let counter = 0;
     let visited = [];
     let frontier = [];
 

@@ -21,6 +21,7 @@ class Canvas extends Component {
       canvasWidth: 100,
       canvasHeight: 100,
     }
+    this.updateDimensions = this.updateDimensions.bind(this);
   }
 
   componentDidMount() {
@@ -34,16 +35,22 @@ class Canvas extends Component {
       });
     });
     this.drawCanvas();
+
+    window.addEventListener("resize", this.updateDimensions);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.updateDimensions);
+  }
+
+  updateDimensions() {
+    this.drawCanvas();
   }
 
   drawCanvas() {
     const windowHeight = window.innerHeight;
-    this.drawBorder();
-    this.drawLines();
-    this.drawCells();
-
-    const containerWidth = this.container.current.offsetWidth;
-    const containerHeight = this.container.current.offsetHeight;
+    const containerWidth = this.container.current.offsetWidth - 50;
+    // const containerHeight = this.container.current.offsetHeight;
 
     let canvasWidth = containerWidth;
     let canvasHeight = containerWidth;
@@ -52,9 +59,12 @@ class Canvas extends Component {
       canvasWidth = windowHeight - 100;
       canvasHeight = windowHeight - 100;
     }
+
+    this.drawBorder();
+    this.drawLines();
+    this.drawCells();
+
     this.setState({
-      containerWidth: containerWidth,
-      containerHeight: containerHeight,
       canvasWidth: canvasWidth,
       canvasHeight: canvasHeight,
     });
