@@ -5,10 +5,10 @@ import {BehaviorSubject} from "rxjs";
 
 class Solver {
 
-  constructor() {
-    this.path = new BehaviorSubject([]);
-    this.moves = new BehaviorSubject([]);
-  }
+  path = new BehaviorSubject([]);
+  moves = new BehaviorSubject([]);
+
+  constructor() {}
 
   solve() {
     const depth = new DepthFirst(Maze);

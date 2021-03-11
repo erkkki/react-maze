@@ -12,8 +12,8 @@ class Player extends React.Component {
     this.solver = Solver;
     this.state = {
       currentMove: 0,
-      path: [],
       pathLength: 0,
+      path: [],
       moves: [],
     }
     this._onChange = this._onChange.bind(this);
@@ -28,8 +28,7 @@ class Player extends React.Component {
         ...this.state,
         path: val,
         pathLength: val.length,
-      }, () => console.log(this.state));
-      console.log(`Path new length ${val.length}, state.path new length ${this.state.path.length}`)
+      }, () => console.log(`Path new length ${val.length}, state.path new length ${this.state.path.length}`));
     });
     this.solver.moves.subscribe(val => {
       // console.log(val)
@@ -88,8 +87,7 @@ class Player extends React.Component {
       <div className="col-12">
         <button className="btn btn-primary" onClick={this.playSolution}> play</button>
         <div className="col-12">
-          {this.state.moves.length}
-          <label htmlFor="customRange1" className="form-label">Example range</label>
+          <label htmlFor="customRange1" className="form-label">{this.state.moves.length} moves</label>
         </div>
         <div className="col-12">
           <input type="range" className="form-range" id="customRange1"
