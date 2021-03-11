@@ -1,19 +1,22 @@
 import Maze from "./Maze";
 
 import DepthFirst from "./DepthFirst";
-import {BehaviorSubject} from "rxjs";
+import {Subject} from "rxjs";
 
 class Solver {
 
-  path = new BehaviorSubject([]);
-  moves = new BehaviorSubject([]);
+  path = [];
+  moves = [];
 
-  constructor() {}
+  constructor() {
+    this.update = new Subject();
+  }
 
   solve() {
     const depth = new DepthFirst(Maze);
-    this.path.next(depth.path);
-    this.moves.next(depth.visitedCells);
+    this.path = depth.path;
+    this.moves = depth.visitedCells;
+    this.update.next();
   }
 }
 

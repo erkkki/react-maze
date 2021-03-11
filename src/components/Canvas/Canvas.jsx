@@ -151,11 +151,14 @@ class Canvas extends Component {
   makeWall(){
     const cell = this.getCellUnderMouse();
 
+
     if (this.state.mouseDown) {
+
       if(cell.state === this.state.mouseDownInitState) {
         this.maze.makeWall(cell.x, cell.y);
       }
     } else {
+      console.log('hello')
       this.maze.makeWall(cell.x, cell.y);
     }
     this.forceUpdate();

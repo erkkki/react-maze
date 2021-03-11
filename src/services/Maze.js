@@ -55,6 +55,14 @@ class Maze {
       cell.state = 0;
       this.maze[x][y] = cell;
     }
+    if(cell.state === 4) {
+      cell.state = 1;
+      this.maze[x][y] = cell;
+    }
+    if(cell.state === 5) {
+      cell.state = 1;
+      this.maze[x][y] = cell;
+    }
   }
 }
 

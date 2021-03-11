@@ -15,26 +15,17 @@ class Player extends React.Component {
       pathLength: 0,
       path: [],
       moves: [],
-    }
+    };
     this._onChange = this._onChange.bind(this);
     this.playSolution = this.playSolution.bind(this);
   }
 
   componentDidMount() {
-    /** TODO not updating state.path value */
-    this.solver.path.subscribe(val => {
-      console.log(`Path new length ${val.length}, state.path length  ${this.state.path.length}`)
+    this.solver.update.subscribe(() => {
       this.setState({
         ...this.state,
-        path: val,
-        pathLength: val.length,
-      }, () => console.log(`Path new length ${val.length}, state.path new length ${this.state.path.length}`));
-    });
-    this.solver.moves.subscribe(val => {
-      // console.log(val)
-      this.setState({
-        ...this.state,
-        moves: val,
+        path: this.solver.path,
+        moves: this.solver.moves,
       });
     });
   }
@@ -42,7 +33,7 @@ class Player extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     for (let i = 0; i < this.state.moves.length; i++) {
       const cell = this.state.moves[i];
-      if(cell.state === 0 || cell.state === 4) {
+      if(cell.state === 0 || cell.state === 4 || cell.state === 5) {
         if(i >= this.state.currentMove) {
           cell.state = 0;
         } else {
@@ -50,12 +41,13 @@ class Player extends React.Component {
         }
       }
     }
-
     if(this.state.moves.length <= this.state.currentMove) {
-      this.state.path.forEach(cell => cell.state = 5);
+      this.state.path.forEach(cell => {
+        if(cell.state === 4) {
+          cell.state = 5;
+        }
+      });
     }
-
-
     Maze.update.next();
   }
 
@@ -63,16 +55,14 @@ class Player extends React.Component {
     this.setState({
       ...this.state,
       currentMove: parseInt(e.target.value),
-    })
+    });
   }
 
   playSolution() {
     let i = this.state.currentMove + 1;
-
     if(i > this.state.moves.length) {
       return;
     }
-
     this.setState({
       ...this.state,
       currentMove: i,
@@ -88,6 +78,7 @@ class Player extends React.Component {
         <button className="btn btn-primary" onClick={this.playSolution}> play</button>
         <div className="col-12">
           <label htmlFor="customRange1" className="form-label">{this.state.moves.length} moves</label>
+          <label htmlFor="customRange1" className="form-label">, solved path: {this.state.path.length}</label>
         </div>
         <div className="col-12">
           <input type="range" className="form-range" id="customRange1"

@@ -19,13 +19,13 @@ class DepthFirst {
   solve() {
     let counter = 0;
     while (JSON.stringify(this.currentCell) !== JSON.stringify(this.end)) {
-      // if(JSON.stringify(this.currentCell) !== JSON.stringify(this.start)) {
-      //   this.currentCell.color = '#8ac672';
-      // }
       /** Failsafe */
       counter++;
-      if(counter > 10000) break;
+      if(counter > 100000) break;
 
+      if(!this.currentCell) {
+        break;
+      }
       const {x,y} = this.currentCell;
       let neighbours = this.getNeighbourCells(x,y);
 
