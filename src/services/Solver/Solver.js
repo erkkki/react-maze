@@ -1,4 +1,4 @@
-import Maze from "./Maze";
+import Maze from "../Maze/Maze";
 
 import DepthFirst from "./DepthFirst";
 import {Subject} from "rxjs";

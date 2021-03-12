@@ -1,15 +1,15 @@
-import React, { Component, createRef } from 'react';
+import React from 'react';
 import './Canvas.css';
 
-import Maze from "../../services/Maze";
+import Maze from "../../services/Maze/Maze";
 
-class Canvas extends Component {
+class Canvas extends React.Component {
 
   constructor(props) {
     super(props);
     this.maze = Maze;
-    this.container = createRef();
-    this.canvasRef = createRef();
+    this.container = React.createRef();
+    this.canvasRef = React.createRef();
     this.state = {
       mouseDown: false,
       mouseDownInitState: 0,
@@ -158,7 +158,6 @@ class Canvas extends Component {
         this.maze.makeWall(cell.x, cell.y);
       }
     } else {
-      console.log('hello')
       this.maze.makeWall(cell.x, cell.y);
     }
     this.forceUpdate();

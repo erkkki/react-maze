@@ -1,14 +1,14 @@
 import React from "react";
 import './Header.css';
 
-import Maze from "../../services/Maze";
+import Maze from "../../services/Maze/Maze";
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
     this.maze = Maze;
     this.state = {
-      size: Maze.size.getValue()
+      size: this.maze.size.getValue()
     };
     this.handleChange = this.handleChange.bind(this);
     this.reset = this.reset.bind(this);

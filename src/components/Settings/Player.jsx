@@ -1,6 +1,7 @@
 import React from "react";
-import Solver from "../../services/Solver";
-import Maze from "../../services/Maze";
+
+import Maze from "../../services/Maze/Maze";
+import Solver from "../../services/Solver/Solver";
 
 
 class Player extends React.Component {
@@ -10,6 +11,7 @@ class Player extends React.Component {
   constructor(props) {
     super(props);
     this.solver = Solver;
+    this.maze = Maze;
     this.state = {
       currentMove: 0,
       pathLength: 0,
@@ -59,6 +61,8 @@ class Player extends React.Component {
   }
 
   playSolution() {
+    this.solver.solve();
+    this.maze.update.next();
     let i = this.state.currentMove + 1;
     if(i > this.state.moves.length) {
       return;

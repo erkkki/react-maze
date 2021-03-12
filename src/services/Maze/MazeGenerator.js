@@ -7,16 +7,13 @@ class MazeGenerator {
 
   constructor(size) {
     this.size = size;
-
-    this.genCells();
+    this.generateCells();
     this.primMaze();
-
     this.randomCoalCells();
-
     return this.maze;
   }
 
-  genCells() {
+  generateCells() {
     const height = this.size;
     const width = this.size;
 
@@ -52,6 +49,7 @@ class MazeGenerator {
       let neighbours = this.getNeighbourCells(currentCell, 2);
       neighbours = neighbours.filter((cell) => !visited.includes(cell));
       if(neighbours.length > 0) {
+        // eslint-disable-next-line no-loop-func
         neighbours.forEach((cell) => {
           if(!frontier.includes(cell)) {
             frontier.push(cell);
@@ -88,31 +86,26 @@ class MazeGenerator {
     return this.maze[x][y];
   }
 
+  /** Select random end & finish cell */
   randomCoalCells() {
-    const height = this.size;
-    const width = this.size;
+    /** Start cell */
+    this.start = this.randomCell();
+    this.start.state = 2;
 
-    let startX = Math.floor(Math.random() * Math.floor(height));
-    let startY = Math.floor(Math.random() * Math.floor(width));
-
-    this.maze[startX][startY].state = 2;
-    this.start = this.maze[startX][startY];
-
+    /** End Cell */
     while (true) {
-      let endX = Math.floor(Math.random() * Math.floor(height));
-      let endY = Math.floor(Math.random() * Math.floor(width));
-
-      if (this.maze[endX][endY].state === 0) {
-        this.maze[endX][endY].state = 3;
-        this.end = this.maze[endX][endY];
+      const end = this.randomCell();
+      if(this.distance(this.start, end) > (this.size / 2)) {
+        this.end = end;
+        this.end.state = 3;
         break;
       }
     }
   }
 
+  /** Return all possible neighbour cells. */
   getNeighbourCells(cell, dist = 1) {
     let neighbours = [];
-    /** All possible neighbour cells. */
     neighbours.push(this.maze?.[cell.x]?.[cell.y-dist]);
     neighbours.push(this.maze?.[cell.x]?.[cell.y+dist]);
     neighbours.push(this.maze?.[cell.x-dist]?.[cell.y]);

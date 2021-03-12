@@ -5,8 +5,6 @@ class Cell {
     this._state = 0;
     this._x = x;
     this._y = y;
-    /** Random color for testing */
-    // this._color = '#'+Math.random().toString(16).substr(2,6);
   }
 
   get x() {
@@ -26,7 +24,6 @@ class Cell {
     return this._state;
   }
   set state(value) {
-
     switch (value) {
       /** Wall */
       case 1: {

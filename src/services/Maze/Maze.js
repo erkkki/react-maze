@@ -21,7 +21,7 @@ class Maze {
     this.maze = [];
     this.maze = new MazeGenerator(size);
 
-    /** Find end and start */
+    /** Find End and Start */
     this.maze.forEach(row => {
       row.forEach(cell => {
         if(cell.state === 2) {
