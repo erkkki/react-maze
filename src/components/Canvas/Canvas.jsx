@@ -1,204 +1,108 @@
-import React from 'react';
+import React from "react";
+
 import './Canvas.css';
 
+
 import Maze from "../../services/Maze/Maze";
+import CanvasService from "../../services/CanvasService";
 
 class Canvas extends React.Component {
-
   constructor(props) {
     super(props);
-    this.maze = Maze;
-    this.container = React.createRef();
     this.canvasRef = React.createRef();
+    this.canvasService = null;
+    this.mazeService = Maze;
     this.state = {
-      mouseDown: false,
-      mouseDownInitState: 0,
+      canvasWidth: 2000,
       mouse: {
+        mouseDown: false,
+        initialState: false,
         x: 0,
         y: 0,
-      },
-      mazeSize: this.maze.size.getValue(),
-      canvasWidth: 100,
-      canvasHeight: 100,
+      }
     }
-    this.updateDimensions = this.updateDimensions.bind(this);
   }
 
   componentDidMount() {
-    this.maze.update.subscribe(() => {
-      this.forceUpdate();
-    });
-
-    this.maze.size.subscribe(value => {
-      this.setState({
-        mazeSize: value
-      });
-    });
-    this.drawCanvas();
-
-    window.addEventListener("resize", this.updateDimensions);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.updateDimensions);
-  }
-
-  updateDimensions() {
-    this.drawCanvas();
-  }
-
-  drawCanvas() {
-    const windowHeight = window.innerHeight;
-    const containerWidth = this.container.current.offsetWidth - 50;
-    // const containerHeight = this.container.current.offsetHeight;
-
-    let canvasWidth = containerWidth;
-    let canvasHeight = containerWidth;
-
-    if(canvasWidth > (windowHeight - 100)) {
-      canvasWidth = windowHeight - 100;
-      canvasHeight = windowHeight - 100;
-    }
-
-    this.drawBorder();
-    this.drawLines();
-    this.drawCells();
-
-    this.setState({
-      canvasWidth: canvasWidth,
-      canvasHeight: canvasHeight,
-    });
+    this.canvasService = new CanvasService(this.canvasRef.current, this.mazeService);
+    this.mazeService.update.subscribe(() => this.updateCanvas());
+    this.updateCanvas();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    this.clearCanvas();
-    this.drawBorder();
-    this.drawLines();
-    this.drawCells();
-  }
+    this.updateCanvas();
 
-  drawCells() {
-    const cells = this.maze.maze;
-    cells.forEach((row) => {
-      row.forEach((cell) => {
-        this.drawCell(cell);
-      })
-    })
-  }
-
-  clearCanvas() {
-    const {width, height} = this.canvasRef.current;
-    const context = this.canvasRef.current.getContext('2d');
-    context.clearRect(0, 0, width, height);
-  }
-
-  drawBorder() {
-    const {width, height} = this.canvasRef.current;
-    const context = this.canvasRef.current.getContext('2d');
-    context.beginPath();
-    context.moveTo(0,0);
-    context.lineTo(width, 0);
-    context.lineTo(width, height);
-    context.lineTo(0, height);
-    context.lineTo(0, 0);
-    context.stroke();
-  }
-
-
-
-  drawLines() {
-    const {width, height} = this.canvasRef.current;
-    const context = this.canvasRef.current.getContext('2d');
-    const cellHeight = height / this.state.mazeSize;
-    const cellWidth = width / this.state.mazeSize;
-
-    /** Vertical lines */
-    for (let i = 0; i < this.state.mazeSize; i++) {
-      context.beginPath();
-      context.moveTo(0, i * cellHeight);
-      context.lineTo(width, i * cellHeight);
-      context.stroke();
-    }
-    /** Horizontal lines */
-    for (let i = 0; i < this.state.mazeSize; i++) {
-      context.beginPath();
-      context.moveTo(i * cellWidth,0);
-      context.lineTo(i * cellWidth, height);
-      context.stroke();
+    if(this.state.mouse.mouseDown) {
+      this.makeWall();
     }
   }
 
-  drawCell(cell) {
-    const context = this.canvasRef.current.getContext('2d');
-    const {width, height} = this.canvasRef.current;
-    const cellHeight = height / this.state.mazeSize;
-    const cellWidth = width / this.state.mazeSize;
+  makeWall() {
+    const cell = this.getCellUnderMouse();
 
-    context.fillStyle = cell.color;
-    context.fillRect(cellWidth * cell.x +1, cellHeight * cell.y +1, cellWidth -2, cellHeight -2);
+    if(cell.state === 2) return;
+    if(cell.state === 3) return;
+
+    if(this.state.mouse.initialState) {
+      cell.state = 1;
+    } else {
+      cell.state = 0;
+    }
+  }
+
+  updateCanvas() {
+    this.canvasService.draw();
   }
 
   getCellUnderMouse() {
     const {x, y} = this.state.mouse;
-    const {width, height} = this.canvasRef.current;
-    const cellHeight = height / this.state.mazeSize;
-    const cellWidth = width / this.state.mazeSize;
+    const {clientWidth, clientHeight} = this.canvasRef.current;
+    const mazeSize = this.mazeService.size.getValue();
+    const cellHeight = clientHeight / mazeSize;
+    const cellWidth = clientWidth / mazeSize;
     const cellX = Math.floor(x / cellWidth);
     const cellY = Math.floor(y / cellHeight);
-    return this.maze.maze[cellX][cellY];
-  }
-
-  makeWall(){
-    const cell = this.getCellUnderMouse();
-
-
-    if (this.state.mouseDown) {
-
-      if(cell.state === this.state.mouseDownInitState) {
-        this.maze.makeWall(cell.x, cell.y);
-      }
-    } else {
-      this.maze.makeWall(cell.x, cell.y);
-    }
-    this.forceUpdate();
+    return this.mazeService.maze[cellX][cellY];
   }
 
   _onMouseMove(e) {
-    this.setState({ mouse: {x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY}});
-    if(this.state.mouseDown) {
-      this.makeWall();
-    }
+    this.setState({...this.state,
+      mouse: {...this.state.mouse, x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY}
+    });
   }
   _onMouseDown() {
+    /** Check if we are building walls or clearing them. */
+    let initialState = true;
     const cell = this.getCellUnderMouse();
-    this.setState({
-      ...this.state,
-      mouseDownInitState: cell.state,
+    if(cell.state === 1) {
+      initialState = false;
+    }
+    this.setState({...this.state,
+      mouse: {...this.state.mouse, mouseDown: true, initialState}
     });
-    this.setState({mouseDown: true});
-    this.makeWall();
   }
   _onMouseUp() {
-    this.setState({mouseDown: false});
-  }
-  _onMouseLeave() {
-    this.setState({mouseDown: false});
+    this.setState({...this.state,
+      mouse: {...this.state.mouse, mouseDown: false}
+    });
   }
 
   render() {
     return (
-      <div className="container" ref={this.container}>
-        <canvas onMouseDown={(event => this._onMouseDown(event))}
+      <div className="container border">
+        <canvas className="border"
+                onMouseDown={(event => this._onMouseDown(event))}
                 onMouseUp={(event => this._onMouseUp(event))}
                 onMouseMove={(event => this._onMouseMove(event))}
-                onMouseLeave={(event => this._onMouseLeave(event))}
+                onMouseLeave={(event => this._onMouseUp(event))}
                 ref={this.canvasRef}
                 width={this.state.canvasWidth}
                 height={this.state.canvasWidth}
         />
       </div>
-    );
+    )
   }
 }
+
 
 export default Canvas;

@@ -1,11 +1,10 @@
-
-class Canvas {
-
-  constructor(maze) {
+class CanvasService {
+  constructor(canvas, maze) {
     // this.canvas = new OffscreenCanvas(2000, 2000);
-    this._canvas = document.createElement('canvas');
-    this._canvas.width = 2000;
-    this._canvas.height = 2000;
+    // this._canvas = document.createElement('canvas');
+    this._canvas = canvas;
+    // this._canvas.width = 2000;
+    // this._canvas.height = 2000;
     this.context = this._canvas.getContext('2d');
 
     this.maze = maze;
@@ -66,4 +65,4 @@ class Canvas {
   }
 }
 
-export default Canvas;
+export default CanvasService;
