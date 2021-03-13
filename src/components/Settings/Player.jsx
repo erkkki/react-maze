@@ -61,7 +61,7 @@ class Player extends React.Component {
   }
 
   playSolution() {
-    this.solver.solve();
+    // this.solver.solve();
     this.maze.update.next();
     let i = this.state.currentMove + 1;
     if(i > this.state.moves.length) {

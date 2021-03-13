@@ -37,7 +37,6 @@ class Header extends React.Component {
 
   newMaze() {
     this.maze.genMaze();
-    this.maze.update.next();
   }
 
   reset() {

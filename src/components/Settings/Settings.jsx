@@ -5,6 +5,7 @@ import Player from "./Player";
 import Maze from "../../services/Maze/Maze";
 import Solver from "../../services/Solver/Solver";
 import HeatMap from "../../services/HeatMap";
+import PlayButton from "./PlayButton";
 
 
 class Settings extends React.Component {
@@ -75,6 +76,9 @@ class Settings extends React.Component {
                   className="btn btn-outline-primary">
             Remove Walls
           </button>
+        </div>
+        <div style={{border: "1px solid red"}}>
+          <PlayButton />
         </div>
       </div>
     );

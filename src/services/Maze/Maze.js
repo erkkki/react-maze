@@ -1,6 +1,7 @@
 import {BehaviorSubject, Subject} from "rxjs";
 
 import MazeGenerator from "./MazeGenerator";
+import Canvas from "../Canvas";
 // import Cell from "./Cell";
 
 class Maze {
@@ -13,6 +14,7 @@ class Maze {
     this.size = new BehaviorSubject(10);
     this.update = new Subject();
     this.genMaze();
+    this.canvas = new Canvas(this);
   }
 
   genMaze() {
@@ -32,7 +34,6 @@ class Maze {
         }
       });
     });
-
     this.update.next();
   }
 

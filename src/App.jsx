@@ -3,8 +3,9 @@ import React from "react";
 
 
 import Header from "./components/Header/Header"
-import Canvas from "./components/Canvas/Canvas";
 import Settings from "./components/Settings/Settings";
+import Canvas from "./components/Canvas/Canvas";
+import Canvas2 from "./components/Canvas/Canvas2";
 
 class App extends React.Component {
 
@@ -18,7 +19,8 @@ class App extends React.Component {
               <Settings />
             </div>
             <div className="col-8">
-              <Canvas />
+              {/*<Canvas />*/}
+              <Canvas2 />
             </div>
           </div>
         </div>
