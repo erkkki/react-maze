@@ -1,7 +1,7 @@
 import React from "react";
 
-import Maze from "../../services/Maze/Maze";
-import Solver from "../../services/Solver/Solver";
+import Maze from "../../services/MazeService";
+import Solver from "../../services/Solver";
 
 
 class Player extends React.Component {
@@ -11,7 +11,7 @@ class Player extends React.Component {
   constructor(props) {
     super(props);
     this.solver = Solver;
-    this.maze = Maze;
+    this.maze = props.maze;
     this.state = {
       currentMove: 0,
       pathLength: 0,
@@ -61,7 +61,6 @@ class Player extends React.Component {
   }
 
   playSolution() {
-    // this.solver.solve();
     this.maze.update.next();
     let i = this.state.currentMove + 1;
     if(i > this.state.moves.length) {
@@ -77,17 +76,19 @@ class Player extends React.Component {
   }
 
   render() {
+    const {moves, path, currentMove } = this.state;
     return (
       <div className="col-12">
         <button className="btn btn-primary" onClick={this.playSolution}> play</button>
         <div className="col-12">
-          <label htmlFor="customRange1" className="form-label">{this.state.moves.length} moves</label>
-          <label htmlFor="customRange1" className="form-label">, solved path: {this.state.path.length}</label>
-        </div>
+          <label htmlFor="customRange1" className="form-label">
+            {moves.length} moves, path {path.length}
+          </label>
+       </div>
         <div className="col-12">
           <input type="range" className="form-range" id="customRange1"
-                 min="0" max={this.state.moves.length} step="1"
-                 value={this.state.currentMove} onChange={this._onChange}/>
+                 min="0" max={moves.length} step="1"
+                 value={currentMove} onChange={this._onChange}/>
         </div>
       </div>
     );

@@ -2,8 +2,6 @@ import React from "react";
 
 import './Canvas.css';
 
-
-import Maze from "../../services/Maze/Maze";
 import CanvasService from "../../services/CanvasService";
 
 class Canvas extends React.Component {
@@ -11,7 +9,7 @@ class Canvas extends React.Component {
     super(props);
     this.canvasRef = React.createRef();
     this.canvasService = null;
-    this.mazeService = Maze;
+    this.mazeService = props.maze;
     this.state = {
       canvasWidth: 2000,
       mouse: {
@@ -40,6 +38,7 @@ class Canvas extends React.Component {
   makeWall() {
     const cell = this.getCellUnderMouse();
 
+    if(!cell) return;
     if(cell.state === 2) return;
     if(cell.state === 3) return;
 
@@ -62,6 +61,9 @@ class Canvas extends React.Component {
     const cellWidth = clientWidth / mazeSize;
     const cellX = Math.floor(x / cellWidth);
     const cellY = Math.floor(y / cellHeight);
+
+    if(cellX > mazeSize || cellX < 0) return;
+    if(cellY > mazeSize || cellY < 0) return;
     return this.mazeService.maze[cellX][cellY];
   }
 
@@ -74,6 +76,7 @@ class Canvas extends React.Component {
     /** Check if we are building walls or clearing them. */
     let initialState = true;
     const cell = this.getCellUnderMouse();
+    if(!cell) return;
     if(cell.state === 1) {
       initialState = false;
     }

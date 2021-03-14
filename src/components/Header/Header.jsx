@@ -1,38 +1,56 @@
 import React from "react";
 import './Header.css';
 
-import Maze from "../../services/Maze/Maze";
+
+import { Subject } from "rxjs";
+import { debounceTime } from "rxjs/operators";
+
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
-    this.maze = Maze;
+    this.maze = props.maze;
     this.state = {
-      size: this.maze.size.getValue()
+      size: this.maze.size.getValue(),
     };
+    this.valueSubject$ = new Subject();
     this.handleChange = this.handleChange.bind(this);
     this.reset = this.reset.bind(this);
     this.newMaze = this.newMaze.bind(this);
+  }
 
+  componentDidMount(){
+    this.subscription = this.valueSubject$
+      .pipe(debounceTime(100))
+      .subscribe((val) =>  this.maze.size.next(val));
+  }
+
+  componentWillUnmount() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
+    }
   }
 
   handleChange(e) {
     const target = e.target;
-    // const name = target.name;
     let value = parseInt(target.value);
+    this.newSize(value);
+  }
 
-    if(value <= 3) {
-      value = 3;
+  newSize(size) {
+    if(isNaN(size)) {
+      return;
     }
-    if(value > 100) {
-      value = 100;
+    if(size <= 3) {
+      size = 3;
     }
-
-    this.maze.setSize(value);
-
+    if(size > 100) {
+      size = 100;
+    }
     this.setState({
-      size: value
+      size: size
     });
+    this.valueSubject$.next(size);
   }
 
   newMaze() {
@@ -41,7 +59,7 @@ class Header extends React.Component {
 
   reset() {
     const size = 10;
-    this.maze.setSize(size);
+    this.newSize(size);
     this.setState({
       size: size
     });
@@ -50,6 +68,7 @@ class Header extends React.Component {
 
 
   render() {
+    const { size } = this.state;
     return (
       <nav className="navbar navbar-light bg-light">
         <div className="container-fluid">
@@ -57,21 +76,21 @@ class Header extends React.Component {
           <form className="d-flex">
             <div className="input-group mb-3">
               <button type="button"
-                      onClick={this.newMaze}
-                      className="btn btn-outline-primary">
+                      className="btn btn-outline-primary"
+                      onClick={this.newMaze}>
                 New Maze
               </button>
               <button type="button"
-                      onClick={this.reset}
-                      className="btn btn-outline-danger">
-                reset
+                      className="btn btn-outline-danger"
+                      onClick={this.reset}>
+                Reset
               </button>
               <span className="input-group-text" id="basic-addon1">Size</span>
               <input className="form-control me-2"
                      name="width"
                      min={3}
                      max={100}
-                     value={this.state.size}
+                     value={size}
                      onChange={this.handleChange}
                      type="number"
                      aria-label="Width" />

@@ -2,23 +2,31 @@ import './App.css';
 import React from "react";
 
 
-import Header from "./components/Header/Header"
-import Settings from "./components/Settings/Settings";
-import Canvas from "./components/Canvas/Canvas";
+import Header from "./Header/Header"
+import Settings from "./Settings/Settings";
+import Canvas from "./Canvas/Canvas";
+
+import Maze from "../services/MazeService";
+
 
 class App extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.maze = Maze;
+  }
 
   render() {
     return (
       <div className="App">
-        <Header />
+        <Header maze={this.maze} />
         <div className="container-fluid">
           <div className="row">
             <div className="col-4">
-              <Settings />
+              <Settings maze={this.maze}/>
             </div>
             <div className="col-8">
-              <Canvas />
+              <Canvas maze={this.maze} />
             </div>
           </div>
         </div>

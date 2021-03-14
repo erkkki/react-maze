@@ -3,20 +3,24 @@ class DepthFirst {
   path = [];
   visitedCells = [];
 
-  constructor(maze) {
+  constructor(maze, start, end) {
     this.maze = maze;
-    this.start = maze.start;
-    this.end = maze.end;
-    this.currentCell = this.start;
-
-    this.visitedCells.push(this.start);
-    this.path.push(this.start);
-
+    this.start = start;
+    this.end = end;
     this.solve();
+
+    return {
+      path: this.path,
+      visitedCells: this.visitedCells,
+    };
   }
 
 
   solve() {
+    this.currentCell = this.start;
+    this.visitedCells.push(this.start);
+    this.path.push(this.start);
+
     let counter = 0;
     while (JSON.stringify(this.currentCell) !== JSON.stringify(this.end)) {
       /** Failsafe */
@@ -37,33 +41,17 @@ class DepthFirst {
         this.path.push(this.currentCell);
         this.currentCell = neighbours[0];
         this.visitedCells.push(this.currentCell);
-
-        // if(this.currentCell.state !== 2 && this.currentCell.state !== 3) {
-        //   this.currentCell.color = '#72c354';
-        // }
-        this.maze.update.next();
       }
     }
-    // this.paintPath(this.path);
-  }
-
-
-  paintPath(path) {
-    path.forEach(cell => {
-      if(cell.state === 0) {
-        cell.color = '#5a7ac3';
-        this.maze.update.next();
-      }
-    });
   }
 
   getNeighbourCells(x,y) {
     let neighbours = [];
     /** All possible neighbour cells. */
-    neighbours.push(this.maze.maze?.[x]?.[y-1]);
-    neighbours.push(this.maze.maze?.[x]?.[y+1]);
-    neighbours.push(this.maze.maze?.[x-1]?.[y]);
-    neighbours.push(this.maze.maze?.[x+1]?.[y]);
+    neighbours.push(this.maze?.[x]?.[y-1]);
+    neighbours.push(this.maze?.[x]?.[y+1]);
+    neighbours.push(this.maze?.[x-1]?.[y]);
+    neighbours.push(this.maze?.[x+1]?.[y]);
 
     /** Filter out out of bound cells */
     neighbours = neighbours.filter(cell => cell !== undefined);
