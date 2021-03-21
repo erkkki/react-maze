@@ -1,6 +1,6 @@
-import {compare, neighbours} from "./utils";
+import {compare, distance, neighbours, getCellByHeading} from "./utils";
 
-class DepthFirst {
+class WallFollower {
 
   path = [];
   visitedCells = [];
@@ -16,10 +16,9 @@ class DepthFirst {
     this.backTracePath();
 
     return {
-      name: 'Depth First',
+      name: 'Wall Follower',
       path: this.path,
       visitedCells: this.visitedCells,
-      info: 'The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph) and explores as far as possible along each branch before backtracking.',
     };
   }
 
@@ -27,7 +26,7 @@ class DepthFirst {
   solve() {
     let currentCell = this.start;
     let counter = 0;
-    let que = [];
+    let heading = 0;
 
     this.visitedCells.push(currentCell);
 
@@ -36,29 +35,33 @@ class DepthFirst {
       counter++;
       if(counter > this.maxCalculations) break;
 
-      /** Get neighbours and add them to que */
-      let neighboursCells = neighbours(this.maze, currentCell);
-      neighboursCells = neighboursCells.filter((cell) => !this.visitedCells.includes(cell));
-      // eslint-disable-next-line no-loop-func
-      neighboursCells.forEach((cell) => que.push(cell));
-      /** Add cell connection to collection */
-      // eslint-disable-next-line no-loop-func
-      neighboursCells.forEach((cell) => this.collection.add({parent: currentCell, child: cell}));
-
-      if(neighboursCells.length !== 0) {
-        currentCell = neighboursCells[0];
-      } else {
-        if(que.length === 0) break;
-        /** Sort que */
-        que = que.filter((cell) => !this.visitedCells.includes(cell));
-        currentCell = que.pop();
+      if(heading > 280 || heading < -280) {
+        heading = 0;
       }
 
-      /** Save to visited */
-      this.visitedCells.push(currentCell);
 
+      let newCell = getCellByHeading(this.maze,heading,currentCell);
+      let newCell2 = getCellByHeading(this.maze,(heading - 90),currentCell);
+
+      if(newCell2 && newCell2.state !== 1) {
+        newCell = newCell2;
+        heading -= 90;
+      }
+
+      if(!newCell || newCell.state === 1) {
+        heading += 90;
+        if(heading > 280) {
+          heading = 0;
+        }
+      } else {
+        this.collection.add({parent: currentCell, child: newCell});
+        currentCell = newCell;
+        /** Save to visited */
+        this.visitedCells.push(currentCell);
+      }
     } while (!compare(currentCell, this.end))
   }
+
 
   backTracePath() {
     let counter = 0;
@@ -85,7 +88,6 @@ class DepthFirst {
         break;
       }
       /** Find new parent from collection */
-      // eslint-disable-next-line no-loop-func
       this.collection.forEach((value) => {
         if(compare(value.child, currentCell)) {
           currentCell = value.parent;
@@ -94,9 +96,6 @@ class DepthFirst {
       this.path.push(currentCell);
     } while (!compare(currentCell,this.start))
   }
-
-
-
 }
 
-export default DepthFirst;
+export default WallFollower;

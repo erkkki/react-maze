@@ -2,59 +2,57 @@ import React from "react";
 
 import './Canvas.css';
 
+import MazeService from "../../services/MazeService";
 import CanvasService from "../../services/CanvasService";
+import {BehaviorSubject} from "rxjs";
 
 class Canvas extends React.Component {
   constructor(props) {
     super(props);
     this.canvasRef = React.createRef();
     this.canvasService = null;
-    this.mazeService = props.maze;
+    this.mazeService = MazeService;
+    this.mouse = new BehaviorSubject({x: 0, y:0});
+    this.mouseDown = false;
+    this.initialState = false;
+
     this.state = {
       canvasWidth: 2000,
-      mouse: {
-        mouseDown: false,
-        initialState: false,
-        x: 0,
-        y: 0,
-      }
     }
   }
 
   componentDidMount() {
-    this.canvasService = new CanvasService(this.canvasRef.current, this.mazeService);
-    this.mazeService.update.subscribe(() => this.updateCanvas());
-    this.updateCanvas();
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    this.updateCanvas();
-
-    if(this.state.mouse.mouseDown) {
-      this.makeWall();
-    }
+    this.canvasService = new CanvasService(this.canvasRef.current, this.mazeService.size.getValue(), this.mazeService.maze.getValue());
+    this.mazeService.maze.subscribe((maze) => {
+      this.canvasService.maze = maze;
+      // this.canvasService.draw();
+    });
+    this.mazeService.size.subscribe((size) => {
+      this.canvasService.size = size;
+      // this.canvasService.draw();
+    });
+    this.mouse.subscribe((value) => {
+      if(this.mouseDown) {
+        this.makeWall();
+      }
+    });
+    this.canvasService.draw();
   }
 
   makeWall() {
     const cell = this.getCellUnderMouse();
-
     if(!cell) return;
     if(cell.state === 2) return;
     if(cell.state === 3) return;
-
-    if(this.state.mouse.initialState) {
-      cell.state = 1;
+    if(this.initialState) {
+      this.mazeService.makeWall(cell);
     } else {
-      cell.state = 0;
+      this.mazeService.removeWall(cell);
     }
   }
 
-  updateCanvas() {
-    this.canvasService.draw();
-  }
-
   getCellUnderMouse() {
-    const {x, y} = this.state.mouse;
+    const {x, y} = this.mouse.getValue();
     const {clientWidth, clientHeight} = this.canvasRef.current;
     const mazeSize = this.mazeService.size.getValue();
     const cellHeight = clientHeight / mazeSize;
@@ -64,15 +62,18 @@ class Canvas extends React.Component {
 
     if(cellX > mazeSize || cellX < 0) return;
     if(cellY > mazeSize || cellY < 0) return;
-    return this.mazeService.maze[cellX][cellY];
+    return this.mazeService.getCell(cellX,cellY);
   }
 
   _onMouseMove(e) {
-    this.setState({...this.state,
-      mouse: {...this.state.mouse, x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY}
+    this.mouse.next({
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY,
     });
   }
+
   _onMouseDown() {
+    this.mouseDown = true;
     /** Check if we are building walls or clearing them. */
     let initialState = true;
     const cell = this.getCellUnderMouse();
@@ -80,20 +81,26 @@ class Canvas extends React.Component {
     if(cell.state === 1) {
       initialState = false;
     }
-    this.setState({...this.state,
-      mouse: {...this.state.mouse, mouseDown: true, initialState}
-    });
+    this.initialState = initialState;
+    this.makeWall();
   }
+
   _onMouseUp() {
-    this.setState({...this.state,
-      mouse: {...this.state.mouse, mouseDown: false}
-    });
+    this.mouseDown = false;
   }
 
   render() {
+    const height = window.innerHeight;
+    const width = window.innerWidth;
+    let size = (height > width)? width: height;
+    size = size - 100;
+    const temp = {
+      height:  size + "px",
+      width: size + "px",
+    }
     return (
       <div className="container border">
-        <canvas className="border"
+        <canvas style={temp} className="border"
                 onMouseDown={(event => this._onMouseDown(event))}
                 onMouseUp={(event => this._onMouseUp(event))}
                 onMouseMove={(event => this._onMouseMove(event))}

@@ -1,6 +1,6 @@
-import {compare, neighbours} from "./utils";
+import {distance, neighbours, compare} from "./utils";
 
-class DepthFirst {
+class Dijkstra {
 
   path = [];
   visitedCells = [];
@@ -16,13 +16,11 @@ class DepthFirst {
     this.backTracePath();
 
     return {
-      name: 'Depth First',
+      name: 'Djikstra',
       path: this.path,
       visitedCells: this.visitedCells,
-      info: 'The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph) and explores as far as possible along each branch before backtracking.',
     };
   }
-
 
   solve() {
     let currentCell = this.start;
@@ -34,30 +32,34 @@ class DepthFirst {
     do {
       /** Failsafe */
       counter++;
-      if(counter > this.maxCalculations) break;
+      if(counter > this.maxCalculations) {
+        break;
+      }
 
-      /** Get neighbours and add them to que */
+      /** Found neighbours and push to que */
       let neighboursCells = neighbours(this.maze, currentCell);
       neighboursCells = neighboursCells.filter((cell) => !this.visitedCells.includes(cell));
-      // eslint-disable-next-line no-loop-func
+      neighboursCells = neighboursCells.filter((cell) => !que.includes(cell));
       neighboursCells.forEach((cell) => que.push(cell));
+
       /** Add cell connection to collection */
       // eslint-disable-next-line no-loop-func
       neighboursCells.forEach((cell) => this.collection.add({parent: currentCell, child: cell}));
 
-      if(neighboursCells.length !== 0) {
-        currentCell = neighboursCells[0];
-      } else {
-        if(que.length === 0) break;
-        /** Sort que */
-        que = que.filter((cell) => !this.visitedCells.includes(cell));
-        currentCell = que.pop();
-      }
+      if(que.length === 0) break;
 
-      /** Save to visited */
+      /** Sort que */
+      que.sort((cell1, cell2) => {
+        return distance(cell1, this.start) - distance(cell2, this.start);
+      });
+
+      /** Take first one from que */
+      currentCell = que.splice(0,1)[0];
+
+
       this.visitedCells.push(currentCell);
 
-    } while (!compare(currentCell, this.end))
+    } while (!compare(currentCell,this.end));
   }
 
   backTracePath() {
@@ -95,8 +97,6 @@ class DepthFirst {
     } while (!compare(currentCell,this.start))
   }
 
-
-
 }
 
-export default DepthFirst;
+export default Dijkstra;

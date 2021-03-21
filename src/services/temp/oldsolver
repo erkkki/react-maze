@@ -1,0 +1,121 @@
+import MazeService from "./MazeService";
+
+import DepthFirst from "./Solver/DepthFirst";
+import Pledge from "./Solver/Pledge";
+import BreadthFirst from "./Solver/BreadthFirst";
+
+import {BehaviorSubject} from "rxjs";
+import {debounceTime} from "rxjs/operators";
+
+class SolverService {
+
+  goalCells = {
+    start: {},
+    end: {},
+  }
+  state = {
+    depth: {
+      running: false,
+      path: [],
+      visitedCells: [],
+    },
+    pledge: {
+      running: false,
+      path: [],
+      visitedCells: [],
+    },
+    breadth: {
+      running: false,
+      path: [],
+      visitedCells: [],
+    }
+  };
+
+  constructor() {
+    this.mazeService = MazeService;
+    this.status = new BehaviorSubject(this.state);
+
+    this.mazeService.update
+      .pipe(debounceTime(200))
+      .subscribe(() => {
+        this.findGoals();
+        this.solve();
+      });
+    this.findGoals();
+    this.solve();
+  }
+
+
+  solve() {
+    console.log('solve')
+    this.state.depth.running = true;
+    this.state.pledge.running = true;
+    this.state.breadth.running = true;
+
+    this.status.next(this.state);
+
+    const depth = this.depth();
+    const pledge = this.pledge();
+    const breadth = this.breadth();
+
+    depth.then((val) => {
+      this.state.depth.path = val.path;
+      this.state.depth.visitedCells = val.visitedCells;
+      this.state.depth.running = false;
+      this.status.next(this.state);
+    });
+    pledge.then((val) => {
+      this.state.pledge.path = val.path;
+      this.state.pledge.visitedCells = val.visitedCells;
+      this.state.pledge.running = false;
+      this.status.next(this.state);
+    });
+    breadth.then((val) => {
+      this.state.breadth.path = val.path;
+      this.state.breadth.visitedCells = val.visitedCells;
+      this.state.breadth.running = false;
+      this.status.next(this.state);
+    });
+  }
+
+  async pledge() {
+    // await this.resolveAfter2Seconds(10);
+    const { path, visitedCells } = await new Pledge(this.mazeService.maze, this.goalCells.start, this.goalCells.end);
+    return {path, visitedCells};
+  }
+
+  async depth() {
+    const { path, visitedCells } = await new DepthFirst(this.mazeService.maze, this.goalCells.start, this.goalCells.end);
+    return {path, visitedCells};
+  }
+
+  async breadth() {
+    const { path, visitedCells } = await new BreadthFirst(this.mazeService.maze, this.goalCells.start, this.goalCells.end);
+    return {path, visitedCells};
+  }
+
+  /** Something to make algorithm take more time, for testing. */
+  resolveAfter2Seconds(x) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(x);
+      }, 2000);
+    });
+  }
+
+  findGoals() {
+    this.mazeService.maze.forEach(row => {
+      row.forEach(cell => {
+        if(cell.state === 2) {
+          this.goalCells.start = cell;
+        }
+        if(cell.state === 3) {
+          this.goalCells.end = cell;
+        }
+      });
+    });
+  }
+}
+
+const _Solver = new SolverService();
+export default _Solver;

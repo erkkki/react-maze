@@ -1,37 +1,22 @@
 import React from "react";
 import './Header.css';
 
-
-import { Subject } from "rxjs";
-import { debounceTime } from "rxjs/operators";
-
+import MazeService from "../../services/MazeService";
 
 class Header extends React.Component {
   constructor(props) {
     super(props);
-    this.maze = props.maze;
+    this.mazeService = MazeService;
     this.state = {
-      size: this.maze.size.getValue(),
+      size: this.mazeService.size.getValue(),
     };
-    this.valueSubject$ = new Subject();
-    this.handleChange = this.handleChange.bind(this);
-    this.reset = this.reset.bind(this);
-    this.newMaze = this.newMaze.bind(this);
   }
 
-  componentDidMount(){
-    this.subscription = this.valueSubject$
-      .pipe(debounceTime(100))
-      .subscribe((val) =>  this.maze.size.next(val));
-  }
+  componentDidMount(){}
 
-  componentWillUnmount() {
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
+  componentWillUnmount() {}
 
-  handleChange(e) {
+  handleChange = (e) => {
     const target = e.target;
     let value = parseInt(target.value);
     this.newSize(value);
@@ -50,21 +35,20 @@ class Header extends React.Component {
     this.setState({
       size: size
     });
-    this.valueSubject$.next(size);
+    this.mazeService.size.next(size);
   }
 
-  newMaze() {
-    this.maze.genMaze();
+  newMaze = () => {
+    this.mazeService.newMaze();
   }
 
-  reset() {
+  reset = () => {
     const size = 10;
     this.newSize(size);
     this.setState({
       size: size
     });
   }
-
 
 
   render() {
@@ -75,6 +59,7 @@ class Header extends React.Component {
           <span className="navbar-brand mb-0 h1">Maze generator & solver</span>
           <form className="d-flex">
             <div className="input-group mb-3">
+              <button type="button" className="btn btn-outline-primary" onClick={() => this.mazeService.removeWalls()}> Remove Walls</button>
               <button type="button"
                       className="btn btn-outline-primary"
                       onClick={this.newMaze}>

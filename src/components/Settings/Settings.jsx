@@ -1,37 +1,32 @@
 import React from "react";
 
+
+
+import MazeService from "../../services/MazeService";
+import SolveSelect from "./SolveSelect";
+
 import Player from "./Player";
-
-
-import Solver from "../../services/Solver";
 
 
 class Settings extends React.Component {
 
   constructor(props) {
     super(props);
-    this.maze = props.maze;
-    this.solver = Solver;
-
-    this.solve = this.solve.bind(this);
+    this.maze = MazeService;
   }
 
-  solve() {
-    this.solver.solve();
-    this.maze.update.next();
+  selectHandler = (val) =>  {
+    this.setState( {
+      ...this.state,
+      selected: val,
+    });
   }
 
   render() {
     return (
       <div className="container-fluid">
-        <Player maze={this.maze}/>
-        <div className="col-12">
-          <button type="button"
-                  onClick={this.solve}
-                  className="btn btn-outline-primary">
-            Solve
-          </button>
-        </div>
+        <Player/>
+        <SolveSelect/>
       </div>
     );
   }

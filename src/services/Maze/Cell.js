@@ -42,6 +42,11 @@ class Cell {
       }
       /** Visited cell */
       case 4: {
+        /** TODO make it darker on every time... */
+        if(this._state === 4) {
+          this._color = '#47673b';
+          break;
+        }
         this._color = '#8ac672';
         break;
       }

@@ -1,16 +1,17 @@
 import Cell from './Cell';
 
 class MazeGenerator {
-  maze = [];
-  start = {};
-  end = {};
+
+  _maze = [];
 
   constructor(size) {
     this.size = size;
     this.generateCells();
     this.primMaze();
-    this.randomCoalCells();
-    return this.maze;
+  }
+
+  get maze() {
+    return this._maze;
   }
 
   generateCells() {
@@ -22,7 +23,7 @@ class MazeGenerator {
       for (let j = 0; j < width; j++) {
         row.push(new Cell(i,j));
       }
-      this.maze.push(row);
+      this._maze.push(row);
     }
   }
 
@@ -31,11 +32,11 @@ class MazeGenerator {
     let visited = [];
     let frontier = [];
 
-    let currentCell = this.maze[0][0];
+    let currentCell = this._maze[0][0];
     visited.push(currentCell);
 
     /** All cells to walls */
-    this.maze.forEach(row => {
+    this._maze.forEach(row => {
       row.forEach(cell => {
         cell.state = 1;
       });
@@ -80,50 +81,17 @@ class MazeGenerator {
     } while (frontier.length > 0)
   }
 
-  randomCell() {
-    let x = Math.floor(Math.random() * Math.floor(this.size));
-    let y = Math.floor(Math.random() * Math.floor(this.size));
-    return this.maze[x][y];
-  }
-
-  /** Select random end & finish cell */
-  randomCoalCells() {
-    /** Start cell */
-    this.start = this.randomCell();
-    this.start.state = 2;
-
-    /** End Cell */
-    while (true) {
-      const end = this.randomCell();
-      if(this.distance(this.start, end) > (this.size / 2)) {
-        this.end = end;
-        this.end.state = 3;
-        break;
-      }
-    }
-  }
-
   /** Return all possible neighbour cells. */
   getNeighbourCells(cell, dist = 1) {
     let neighbours = [];
-    neighbours.push(this.maze?.[cell.x]?.[cell.y-dist]);
-    neighbours.push(this.maze?.[cell.x]?.[cell.y+dist]);
-    neighbours.push(this.maze?.[cell.x-dist]?.[cell.y]);
-    neighbours.push(this.maze?.[cell.x+dist]?.[cell.y]);
+    neighbours.push(this._maze?.[cell.x]?.[cell.y-dist]);
+    neighbours.push(this._maze?.[cell.x]?.[cell.y+dist]);
+    neighbours.push(this._maze?.[cell.x-dist]?.[cell.y]);
+    neighbours.push(this._maze?.[cell.x+dist]?.[cell.y]);
 
     /** Filter out out of bound cells */
     neighbours = neighbours.filter(cell => cell !== undefined);
     return neighbours;
-  }
-
-  /** Distance between 2 points */
-  distance(cell1, cell2) {
-    return Math.sqrt(
-      (
-        Math.pow(cell2.x - cell1.x, 2) +
-        Math.pow(cell2.y - cell1.y, 2)
-      )
-    );
   }
 }
 

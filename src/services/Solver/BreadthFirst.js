@@ -1,6 +1,6 @@
 import {compare, neighbours} from "./utils";
 
-class DepthFirst {
+class BreadthFirst {
 
   path = [];
   visitedCells = [];
@@ -16,13 +16,12 @@ class DepthFirst {
     this.backTracePath();
 
     return {
-      name: 'Depth First',
+      name: 'Breadth First',
       path: this.path,
       visitedCells: this.visitedCells,
-      info: 'The algorithm starts at the root node (selecting some arbitrary node as the root node in the case of a graph) and explores as far as possible along each branch before backtracking.',
+      info: 'djikarte vs breadh = djikarta que sorter, breadh fifo'
     };
   }
-
 
   solve() {
     let currentCell = this.start;
@@ -39,20 +38,17 @@ class DepthFirst {
       /** Get neighbours and add them to que */
       let neighboursCells = neighbours(this.maze, currentCell);
       neighboursCells = neighboursCells.filter((cell) => !this.visitedCells.includes(cell));
-      // eslint-disable-next-line no-loop-func
+      neighboursCells = neighboursCells.filter((cell) => !que.includes(cell));
       neighboursCells.forEach((cell) => que.push(cell));
       /** Add cell connection to collection */
       // eslint-disable-next-line no-loop-func
       neighboursCells.forEach((cell) => this.collection.add({parent: currentCell, child: cell}));
 
-      if(neighboursCells.length !== 0) {
-        currentCell = neighboursCells[0];
-      } else {
-        if(que.length === 0) break;
-        /** Sort que */
-        que = que.filter((cell) => !this.visitedCells.includes(cell));
-        currentCell = que.pop();
-      }
+
+      if(que.length === 0) break;
+
+      /** Take first one from que */
+      currentCell = que.splice(0,1)[0];
 
       /** Save to visited */
       this.visitedCells.push(currentCell);
@@ -95,8 +91,6 @@ class DepthFirst {
     } while (!compare(currentCell,this.start))
   }
 
-
-
 }
 
-export default DepthFirst;
+export default BreadthFirst;

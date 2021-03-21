@@ -1,13 +1,22 @@
 class CanvasService {
-  constructor(canvas, maze) {
-    // this.canvas = new OffscreenCanvas(2000, 2000);
-    // this._canvas = document.createElement('canvas');
-    this._canvas = canvas;
-    // this._canvas.width = 2000;
-    // this._canvas.height = 2000;
-    this.context = this._canvas.getContext('2d');
 
-    this.maze = maze;
+  counter = 0;
+  running = false;
+  fps = 10;
+
+  constructor(canvas, size, maze) {
+    this._canvas = canvas;
+    this.context = this._canvas.getContext('2d');
+    this._size = size;
+    this._maze = maze;
+    this.draw();
+  }
+
+  set size(val) {
+    this._size = val;
+  }
+  set maze(val) {
+    this._maze = val;
   }
 
   get canvas() {
@@ -16,8 +25,15 @@ class CanvasService {
   }
 
   draw() {
+    setTimeout(() => {
+      requestAnimationFrame(() => this.draw());
+      this._draw();
+    }, 1000 / this.fps);
+  }
+
+  _draw() {
     this.clearCanvas();
-    this.maze.maze.forEach(row => {
+    this._maze.forEach(row => {
       row.forEach(cell => {
         this.drawCell(cell);
       });
@@ -27,7 +43,7 @@ class CanvasService {
 
   drawCell(cell) {
     const {width, height} = this._canvas;
-    const size = this.maze.size.getValue();
+    const size = this._size;
     const cellHeight = height / size;
     const cellWidth = width / size;
     this.context.fillStyle = cell.color;
@@ -39,19 +55,19 @@ class CanvasService {
 
   drawLines() {
     const {width, height} = this._canvas;
-    const size = this.maze.size.getValue();
+    const size = this._size;
     const cellHeight = height / size;
     const cellWidth = width / size;
 
     /** Vertical lines */
-    for (let i = 0; i < this.maze.size.getValue(); i++) {
+    for (let i = 0; i < this._size; i++) {
       this.context.beginPath();
       this.context.moveTo(0, i * cellHeight);
       this.context.lineTo(width, i * cellHeight);
       this.context.stroke();
     }
     /** Horizontal lines */
-    for (let i = 0; i < this.maze.size.getValue(); i++) {
+    for (let i = 0; i < this._size; i++) {
       this.context.beginPath();
       this.context.moveTo(i * cellWidth,0);
       this.context.lineTo(i * cellWidth, height);
