@@ -5,9 +5,6 @@ import Header from "./Header/Header"
 import Settings from "./Settings/Settings";
 import Canvas from "./Canvas/Canvas";
 
-import MazeService from "../services/MazeService";
-
-
 class App extends React.Component {
 
   render() {

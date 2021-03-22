@@ -26,8 +26,8 @@ class Header extends React.Component {
     if(isNaN(size)) {
       return;
     }
-    if(size <= 3) {
-      size = 3;
+    if(size <= 10) {
+      size = 10;
     }
     if(size > 100) {
       size = 100;

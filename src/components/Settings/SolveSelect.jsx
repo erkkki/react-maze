@@ -39,6 +39,7 @@ class SolveSelect extends React.Component {
     const selected = this.state.selected;
     const size = this.mazeService.size.getValue();
 
+
     return (
       <ul className="list-group">
         <SelectAlgorithmButton key={depth.name} selected={selected} status={depth} size={size} clickHandler={this.select} />

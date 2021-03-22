@@ -1,20 +1,20 @@
 import {BehaviorSubject} from "rxjs";
 import {debounceTime} from "rxjs/operators";
 
+
 import MazeGenerator from "./Maze/MazeGenerator";
 
-import DepthFirst from "./Solver/DepthFirst";
-import BreadthFirst from "./Solver/BreadthFirst";
-import Pledge from "./Solver/Pledge";
-import Dijkstra from "./Solver/Dijkstra";
-import Astar from "./Solver/Astar";
-import WallFollower from "./Solver/WallFollower";
+
+import AWorker from '../worker/a.worker';
+import BreathWorker from '../worker/breath.worker';
+import DepthWorker from '../worker/depth.worker';
+import DjikstraWorker from '../worker/djikstra.worker';
+import WallWorker from '../worker/wall.worker';
 
 const pathsInitialState = {
   wall: {'name': 'Wall Follower', path: [], visitedCells: []},
   depth: {'name': 'Depth First', path: [], visitedCells: []},
   breadth: {'name': 'Breadth first', path: [], visitedCells: []},
-  // pledge: {'name': 'Pledge', path: [], visitedCells: []},
   dijkstra: {'name': 'Dijkstra', path: [], visitedCells: []},
   a: {'name': 'A*', path: [], visitedCells: []},
 };
@@ -33,12 +33,15 @@ class MazeService {
   size = new BehaviorSubject(10);
   paths = new BehaviorSubject(pathsInitialState);
   selected = new BehaviorSubject({'name': 'Depth First', path: [], visitedCells: []});
-  // selected = new BehaviorSubject({'name': 'Depth First', path: [], visitedCells: []});
 
+  aWorker = new AWorker();
+  breathWorker = new BreathWorker();
+  depthWorker = new DepthWorker();
+  djikstraWorker = new DjikstraWorker();
+  wallWorker = new WallWorker();
 
   constructor() {
     this.newMaze();
-
     this.solve();
 
     this.size.pipe(debounceTime(100)).subscribe((val) => {
@@ -52,6 +55,8 @@ class MazeService {
     this.paths.subscribe(() => this.paintVisitedCells());
     this.selected.subscribe(() => this.paintVisitedCells());
     this.currentMove.subscribe(() => this.paintVisitedCells());
+
+
   }
 
   resetMaze() {
@@ -70,7 +75,11 @@ class MazeService {
     const currentMove = this.currentMove.getValue();
 
     for(let i = 0; i < currentMove; i++) {
-      const cell = selected.visitedCells[i];
+      if(!selected.visitedCells[i]) return;
+      const x = selected.visitedCells[i]._x;
+      const y = selected.visitedCells[i]._y;
+      if(!this._maze[x][y]) return;
+      const cell = this._maze[x][y];
       if(!cell) return;
       if([0,4].includes(cell.state)) {
         cell.state = 4;
@@ -79,7 +88,11 @@ class MazeService {
 
     if(currentMove >= selected.visitedCells.length) {
       for(let i = 0; i < selected.path.length; i++) {
-        const cell = selected.path[i];
+        if(!selected.path[i]) return;
+        const x = selected.path[i]._x;
+        const y = selected.path[i]._y;
+        if(!this._maze[x][y]) return;
+        const cell = this._maze[x][y];
         if(!cell) return;
         if([0,4,5].includes(cell.state)) {
           cell.state = 5;
@@ -90,81 +103,69 @@ class MazeService {
   }
 
   solve() {
-    // console.log('solve');
-    const wall = this.wallFollower();
-    const dep = this.depth();
-    const breadth = this.breadhfirst();
-    // const pledge = this.pledge();
-    const djikastra = this.djikastra();
-    const astar = this.astar();
+    this.a();
+    this.breath();
+    this.depth();
+    this.djika();
+    this.wall();
+  }
 
-    wall.then((value) => {
-      this._paths.wall = value;
+
+
+
+  a() {
+    this.aWorker.postMessage([this._maze, this._start, this._end]);
+    this.aWorker.addEventListener('message', event => {
+      this._paths.a = event.data;
       this.paths.next(this._paths);
-      if(this.selected.getValue().name === value.name) {
-        this.selected.next(value);
-      }
-    });
-    dep.then((value) => {
-      this._paths.depth = value;
-      this.paths.next(this._paths);
-      if(this.selected.getValue().name === value.name) {
-        this.selected.next(value);
-      }
-    });
-    breadth.then((value) => {
-      this._paths.breadth = value;
-      this.paths.next(this._paths);
-      if(this.selected.getValue().name === value.name) {
-        this.selected.next(value);
-      }
-    });
-    // pledge.then((value) => {
-    //   this._paths.pledge = value;
-    //   this.paths.next(this._paths);
-    //   if(this.selected.getValue().name === value.name) {
-    //     this.selected.next(value);
-    //   }
-    // });
-    djikastra.then((value) => {
-      this._paths.dijkstra = value;
-      this.paths.next(this._paths);
-      if(this.selected.getValue().name === value.name) {
-        this.selected.next(value);
-      }
-    });
-    astar.then((value) => {
-      this._paths.a = value;
-      this.paths.next(this._paths);
-      if(this.selected.getValue().name === value.name) {
-        this.selected.next(value);
+      if(this.selected.getValue().name === event.data.name) {
+        this.selected.next(event.data);
       }
     });
   }
 
-  async depth() {
-    const {name, path, visitedCells } = await new DepthFirst(this._maze, this._start, this._end);
-    return {name, path, visitedCells};
+  breath() {
+    this.breathWorker.postMessage([this._maze, this._start, this._end]);
+    this.breathWorker.addEventListener('message', event => {
+      this._paths.breadth = event.data;
+      this.paths.next(this._paths);
+      if(this.selected.getValue().name === event.data.name) {
+        this.selected.next(event.data);
+      }
+    });
   }
-  async wallFollower() {
-    const {name, path, visitedCells } = await new WallFollower(this._maze, this._start, this._end);
-    return {name, path, visitedCells};
+
+  depth() {
+    this.depthWorker.postMessage([this._maze, this._start, this._end]);
+    this.depthWorker.addEventListener('message', event => {
+        this._paths.depth = event.data;
+        this.paths.next(this._paths);
+        if(this.selected.getValue().name === event.data.name) {
+          this.selected.next(event.data);
+        }
+    });
   }
-  async breadhfirst() {
-    const {name, path, visitedCells } = await new BreadthFirst(this._maze, this._start, this._end);
-    return {name, path, visitedCells};
+
+  djika() {
+    this.djikstraWorker.postMessage([this._maze, this._start, this._end]);
+    this.djikstraWorker.addEventListener('message', event => {
+      this._paths.dijkstra = event.data;
+      this.paths.next(this._paths);
+      if(this.selected.getValue().name === event.data.name) {
+        this.selected.next(event.data);
+      }
+    });
   }
-  async pledge() {
-    const {name, path, visitedCells } = await new Pledge(this._maze, this._start, this._end);
-    return {name, path, visitedCells};
-  }
-  async djikastra() {
-    const {name, path, visitedCells } = await new Dijkstra(this._maze, this._start, this._end);
-    return {name, path, visitedCells};
-  }
-  async astar() {
-    const {name, path, visitedCells } = await new Astar(this._maze, this._start, this._end);
-    return {name, path, visitedCells};
+
+  wall() {
+    this.wallWorker.postMessage([this._maze, this._start, this._end]);
+    this.wallWorker.addEventListener('message', event => {
+      this._paths.wall = event.data;
+      this.paths.next(this._paths);
+      if(this.selected.getValue().name === event.data.name) {
+        this.selected.next(event.data);
+      }
+    });
   }
 
   /** Returns cell with given x, y */

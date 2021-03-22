@@ -32,6 +32,7 @@ class DepthFirst {
     this.visitedCells.push(currentCell);
 
     do {
+
       /** Failsafe */
       counter++;
       if(counter > this.maxCalculations) break;
@@ -53,7 +54,6 @@ class DepthFirst {
         que = que.filter((cell) => !this.visitedCells.includes(cell));
         currentCell = que.pop();
       }
-
       /** Save to visited */
       this.visitedCells.push(currentCell);
 
