@@ -36,7 +36,6 @@ class Canvas extends React.Component {
       }
     });
     this.canvasService.draw();
-    console.log(this.containerRef.current.clientWidth, ' ', this.containerRef.current.clientHeight);
   }
 
   makeWall() {

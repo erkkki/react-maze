@@ -4,6 +4,7 @@ import React from "react";
 import Header from "./Header/Header"
 import Settings from "./Settings/Settings";
 import Canvas from "./Canvas/Canvas";
+import Player from "./Player";
 
 class App extends React.Component {
 
@@ -14,7 +15,12 @@ class App extends React.Component {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-4 col-sm-12">
-              <Settings />
+              <div className="player border">
+                <Player />
+              </div>
+              <div className="settings border">
+                <Settings />
+              </div>
             </div>
             <div className="col-md-8 col-sm-12">
               <Canvas />

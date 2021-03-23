@@ -3,7 +3,7 @@ import React from "react";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFastBackward, faFastForward, faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
-import MazeService from "../../services/MazeService";
+import MazeService from "../services/MazeService";
 
 
 class Player extends React.Component {
@@ -81,7 +81,7 @@ class Player extends React.Component {
     const center = {
       textAlign: "center",
     }
-    const {path, visitedCells, currentMove} = this.state;
+    const {visitedCells, currentMove} = this.state;
 
     return (
       <div style={center}>
@@ -91,9 +91,6 @@ class Player extends React.Component {
           <button type="button" onClick={() => this.stop()} className="btn btn-primary"><FontAwesomeIcon icon={faStop} /></button>
           <button type="button" onClick={() => this.goTo(visitedCells.length)} className="btn btn-primary"><FontAwesomeIcon icon={faFastForward} /></button>
         </div>
-        <label htmlFor="customRange1" className="form-label">
-          Path: {path.length} , visited: {visitedCells.length}, current: {currentMove}
-        </label>
         <input type="range" className="form-range" id="customRange1" style={{width : "100%"}}
                min="0" max={visitedCells.length} step="1"
                value={currentMove} onChange={(e) => this._onChange(e)}/>

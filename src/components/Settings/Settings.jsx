@@ -5,8 +5,6 @@ import React from "react";
 import MazeService from "../../services/MazeService";
 import SolveSelect from "./SolveSelect";
 
-import Player from "./Player";
-
 
 class Settings extends React.Component {
 
@@ -25,7 +23,6 @@ class Settings extends React.Component {
   render() {
     return (
       <div className="container-fluid">
-        <Player/>
         <SolveSelect/>
       </div>
     );
