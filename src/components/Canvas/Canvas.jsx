@@ -9,6 +9,7 @@ import {BehaviorSubject} from "rxjs";
 class Canvas extends React.Component {
   constructor(props) {
     super(props);
+    this.containerRef = React.createRef();
     this.canvasRef = React.createRef();
     this.canvasService = null;
     this.mazeService = MazeService;
@@ -25,11 +26,9 @@ class Canvas extends React.Component {
     this.canvasService = new CanvasService(this.canvasRef.current, this.mazeService.size.getValue(), this.mazeService.maze.getValue());
     this.mazeService.maze.subscribe((maze) => {
       this.canvasService.maze = maze;
-      // this.canvasService.draw();
     });
     this.mazeService.size.subscribe((size) => {
       this.canvasService.size = size;
-      // this.canvasService.draw();
     });
     this.mouse.subscribe((value) => {
       if(this.mouseDown) {
@@ -37,6 +36,7 @@ class Canvas extends React.Component {
       }
     });
     this.canvasService.draw();
+    console.log(this.containerRef.current.clientWidth, ' ', this.containerRef.current.clientHeight);
   }
 
   makeWall() {
@@ -90,17 +90,9 @@ class Canvas extends React.Component {
   }
 
   render() {
-    const height = window.innerHeight;
-    const width = window.innerWidth;
-    let size = (height > width)? width: height;
-    size = size - 100;
-    const temp = {
-      height:  size + "px",
-      width: size + "px",
-    }
     return (
-      <div className="container border">
-        <canvas style={temp} className="border"
+      <div className="container border" ref={this.containerRef}>
+        <canvas className="border"
                 onMouseDown={(event => this._onMouseDown(event))}
                 onMouseUp={(event => this._onMouseUp(event))}
                 onMouseMove={(event => this._onMouseMove(event))}
