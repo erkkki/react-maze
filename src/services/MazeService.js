@@ -101,6 +101,10 @@ class MazeService {
   }
 
   solve() {
+    let selected = this.selected.getValue();
+    selected.path = [];
+    selected.visitedCells = [];
+    this.selected.next(selected);
     this.a();
     this.breath();
     this.depth();
@@ -121,7 +125,7 @@ class MazeService {
       this._paths.a = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
-        this.selected.next(event.data);
+        this.selected.next(this._paths.a);
       }
     });
   }
@@ -136,7 +140,7 @@ class MazeService {
       this._paths.breadth = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
-        this.selected.next(event.data);
+        this.selected.next(this._paths.breadth);
       }
     });
   }
@@ -151,7 +155,7 @@ class MazeService {
         this._paths.depth = { ...event.data, status: true};
         this.paths.next(this._paths);
         if(this.selected.getValue().name === event.data.name) {
-          this.selected.next(event.data);
+          this.selected.next(this._paths.depth);
         }
     });
   }
@@ -166,7 +170,7 @@ class MazeService {
       this._paths.dijkstra = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
-        this.selected.next(event.data);
+        this.selected.next( this._paths.dijkstra);
       }
     });
   }
@@ -181,7 +185,7 @@ class MazeService {
       this._paths.wall = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
-        this.selected.next(event.data);
+        this.selected.next(this._paths.wall);
       }
     });
   }
