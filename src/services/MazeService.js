@@ -12,11 +12,11 @@ import DjikstraWorker from '../worker/djikstra.worker';
 import WallWorker from '../worker/wall.worker';
 
 const pathsInitialState = {
-  wall: {'name': 'Wall Follower', path: [], visitedCells: []},
-  depth: {'name': 'Depth First', path: [], visitedCells: []},
-  breadth: {'name': 'Breadth first', path: [], visitedCells: []},
-  dijkstra: {'name': 'Dijkstra', path: [], visitedCells: []},
-  a: {'name': 'A*', path: [], visitedCells: []},
+  wall: {name: 'Wall Follower', status: true, path: [], visitedCells: []},
+  depth: {name: 'Depth First', status: true, path: [], visitedCells: []},
+  breadth: {name: 'Breadth first', status: true, path: [], visitedCells: []},
+  dijkstra: {name: 'Dijkstra', status: true, path: [], visitedCells: []},
+  a: {name: 'A*', status: true, path: [], visitedCells: []},
 };
 
 class MazeService {
@@ -112,9 +112,13 @@ class MazeService {
 
 
   a() {
+    this._paths.a.status = false;
+    this._paths.a.path = [];
+    this._paths.a.visitedCells = [];
+    this.paths.next(this._paths);
     this.aWorker.postMessage([this._maze, this._start, this._end]);
     this.aWorker.addEventListener('message', event => {
-      this._paths.a = event.data;
+      this._paths.a = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
         this.selected.next(event.data);
@@ -123,9 +127,13 @@ class MazeService {
   }
 
   breath() {
+    this._paths.breadth.status = false;
+    this._paths.breadth.path = [];
+    this._paths.breadth.visitedCells = [];
+    this.paths.next(this._paths);
     this.breathWorker.postMessage([this._maze, this._start, this._end]);
     this.breathWorker.addEventListener('message', event => {
-      this._paths.breadth = event.data;
+      this._paths.breadth = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
         this.selected.next(event.data);
@@ -134,9 +142,13 @@ class MazeService {
   }
 
   depth() {
+    this._paths.depth.status = false;
+    this._paths.depth.path = [];
+    this._paths.depth.visitedCells = [];
+    this.paths.next(this._paths);
     this.depthWorker.postMessage([this._maze, this._start, this._end]);
     this.depthWorker.addEventListener('message', event => {
-        this._paths.depth = event.data;
+        this._paths.depth = { ...event.data, status: true};
         this.paths.next(this._paths);
         if(this.selected.getValue().name === event.data.name) {
           this.selected.next(event.data);
@@ -145,9 +157,13 @@ class MazeService {
   }
 
   djika() {
+    this._paths.dijkstra.status = false;
+    this._paths.dijkstra.path = [];
+    this._paths.dijkstra.visitedCells = [];
+    this.paths.next(this._paths);
     this.djikstraWorker.postMessage([this._maze, this._start, this._end]);
     this.djikstraWorker.addEventListener('message', event => {
-      this._paths.dijkstra = event.data;
+      this._paths.dijkstra = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
         this.selected.next(event.data);
@@ -156,9 +172,13 @@ class MazeService {
   }
 
   wall() {
+    this._paths.wall.status = false;
+    this._paths.wall.path = [];
+    this._paths.wall.visitedCells = [];
+    this.paths.next(this._paths);
     this.wallWorker.postMessage([this._maze, this._start, this._end]);
     this.wallWorker.addEventListener('message', event => {
-      this._paths.wall = event.data;
+      this._paths.wall = { ...event.data, status: true};
       this.paths.next(this._paths);
       if(this.selected.getValue().name === event.data.name) {
         this.selected.next(event.data);

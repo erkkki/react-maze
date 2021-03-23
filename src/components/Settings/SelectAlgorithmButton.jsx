@@ -3,7 +3,7 @@ import React from "react";
 class SelectAlgorithmButton extends React.Component {
   static defaultProps = {
     status: {
-      running: false,
+      status: true,
       name: '',
       path: [],
       visitedCells: [],
@@ -29,8 +29,9 @@ class SelectAlgorithmButton extends React.Component {
       bottom: "4px",
       right: "4px"
     };
+
     return (
-      <li className={`list-group-item ${!status.running? "list-group-item-primary" : "list-group-item-warning"}`}>
+      <li className={`list-group-item ${status.status? "list-group-item-primary" : "list-group-item-danger"}`}>
         <button type="button" onClick={() => clickHandler(status)}
                 className={`btn btn-outline-primary ${selected? "active" : ""}`}>
           {name}
@@ -39,7 +40,7 @@ class SelectAlgorithmButton extends React.Component {
           <span className={`badge rounded-pill ${(status.path.length === 0 || status.path.length > (mazeSize * mazeSize -1))? "bg-danger" : "bg-success"}`}>Path: {status.path.length}</span>
         </div>
         <div style={visitedBadge}>
-          <span className={`badge rounded-pill ${(status.path.length === 0 || status.visitedCells.length > (mazeSize * mazeSize - 1))? "bg-danger" : "bg-success"}`}>Visited cells: {status.visitedCells.length}</span>
+          <span className={`badge rounded-pill ${(status.path.length === 0)? "bg-danger" : "bg-success"}`}>Visited cells: {status.visitedCells.length}</span>
         </div>
         {selected}
       </li>
