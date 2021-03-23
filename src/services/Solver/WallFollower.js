@@ -43,12 +43,12 @@ class WallFollower {
       let newCell = getCellByHeading(this.maze,heading,currentCell);
       let newCell2 = getCellByHeading(this.maze,(heading - 90),currentCell);
 
-      if(newCell2 && newCell2.state !== 1) {
+      if(newCell2 && newCell2._state !== 1) {
         newCell = newCell2;
         heading -= 90;
       }
 
-      if(!newCell || newCell.state === 1) {
+      if(!newCell || newCell._state === 1) {
         heading += 90;
         if(heading > 280) {
           heading = 0;
