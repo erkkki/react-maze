@@ -81,7 +81,7 @@ class Player extends React.Component {
     const center = {
       textAlign: "center",
     }
-    const {name, path, visitedCells, currentMove} = this.state;
+    const {path, visitedCells, currentMove} = this.state;
 
     return (
       <div style={center}>

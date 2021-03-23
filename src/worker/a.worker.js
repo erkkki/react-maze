@@ -1,5 +1,5 @@
 
-import Astar from "../services/Solver/Astar";
+import Astar from "../services/Algorithms/Astar";
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("message", startCounter);

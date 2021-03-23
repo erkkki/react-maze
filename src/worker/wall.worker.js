@@ -1,5 +1,5 @@
 
-import WallFollower from "../services/Solver/WallFollower";
+import WallFollower from "../services/Algorithms/WallFollower";
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("message", startCounter);

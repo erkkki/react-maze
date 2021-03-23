@@ -1,5 +1,5 @@
 
-import BreadthFirst from "../services/Solver/BreadthFirst";
+import BreadthFirst from "../services/Algorithms/BreadthFirst";
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("message", startCounter);

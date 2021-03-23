@@ -55,8 +55,6 @@ class MazeService {
     this.paths.subscribe(() => this.paintVisitedCells());
     this.selected.subscribe(() => this.paintVisitedCells());
     this.currentMove.subscribe(() => this.paintVisitedCells());
-
-
   }
 
   resetMaze() {

@@ -1,5 +1,5 @@
 
-import DepthFirst from "../services/Solver/DepthFirst";
+import DepthFirst from "../services/Algorithms/DepthFirst";
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("message", startCounter);

@@ -1,5 +1,5 @@
 
-import Dijkstra from "../services/Solver/Dijkstra";
+import Dijkstra from "../services/Algorithms/Dijkstra";
 
 // eslint-disable-next-line no-restricted-globals
 self.addEventListener("message", startCounter);
