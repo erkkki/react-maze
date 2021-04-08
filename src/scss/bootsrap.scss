@@ -1,0 +1,30 @@
+@import "/node_modules/bootstrap/scss/bootstrap";
+
+// Required
+@import "/node_modules/bootstrap/scss/functions";
+
+// Default variable overrides
+$body-bg: #222222;
+$body-color: #242323;
+
+$primary: #6407a9;
+$danger: #ff4136;
+
+// Required
+@import "/node_modules/bootstrap/scss/variables";
+@import "/node_modules/bootstrap/scss/mixins";
+
+// Bootstrap and its default variables
+
+// Optional Bootstrap components here
+@import "/node_modules/bootstrap/scss/root";
+@import "/node_modules/bootstrap/scss/reboot";
+@import "/node_modules/bootstrap/scss/type";
+// etc
+
+
+//
+//$theme-colors: (
+//        "primary": $primary,
+//        "danger": $danger
+//);

@@ -15,15 +15,15 @@ class App extends React.Component {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-4 col-sm-12">
-              <div className="player border">
+              <div className="player border border-primary">
                 <Player />
               </div>
-              <div className="settings border">
+              <div className="settings border border-primary">
                 <Settings />
               </div>
             </div>
             <div className="col-md-8 col-sm-12">
-              <Canvas />
+                <Canvas />
             </div>
           </div>
         </div>

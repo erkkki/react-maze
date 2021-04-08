@@ -38,6 +38,10 @@ class Canvas extends React.Component {
     this.canvasService.draw();
   }
 
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    console.log(this.containerRef.current.innerWidth, ' ', this.containerRef.current.innerHeight)
+  }
+
   makeWall() {
     const cell = this.getCellUnderMouse();
     if(!cell) return;
@@ -90,15 +94,15 @@ class Canvas extends React.Component {
 
   render() {
     return (
-      <div className="container border" ref={this.containerRef}>
+      <div className="container border border-primary" ref={this.containerRef}>
         <canvas className="border"
                 onMouseDown={(event => this._onMouseDown(event))}
                 onMouseUp={(event => this._onMouseUp(event))}
                 onMouseMove={(event => this._onMouseMove(event))}
                 onMouseLeave={(event => this._onMouseUp(event))}
                 ref={this.canvasRef}
-                width={this.state.canvasWidth}
-                height={this.state.canvasWidth}
+                width={this.state.canvasWidth + 'px'}
+                height={this.state.canvasWidth + 'px'}
         />
       </div>
     )

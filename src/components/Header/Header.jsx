@@ -4,6 +4,10 @@ import './Header.css';
 import MazeService from "../../services/MazeService";
 
 class Header extends React.Component {
+  minSize = 10;
+  maxSize = 40;
+
+
   constructor(props) {
     super(props);
     this.mazeService = MazeService;
@@ -26,11 +30,11 @@ class Header extends React.Component {
     if(isNaN(size)) {
       return;
     }
-    if(size <= 10) {
-      size = 10;
+    if(size <= this.minSize) {
+      size = this.minSize;
     }
-    if(size > 100) {
-      size = 100;
+    if(size > this.maxSize) {
+      size = this.maxSize;
     }
     this.setState({
       size: size
